@@ -103,7 +103,7 @@ class SpaceFieldTest {
     val explosions = spaceField.explosions.last()
 
     val expectedSpaceObjects = listOf<SpaceObject>(
-      ship, missile, asteroid
+      ship, missile, asteroid, explosions
     )
 
     assertEquals(expectedSpaceObjects, spaceField.spaceObjects)
@@ -405,11 +405,18 @@ class SpaceFieldTest {
   fun `it does clear all explosions`() {
     spaceField.generateAsteroid()
 
-    val asteroid = spaceField.asteroids.last()
+    var asteroid = spaceField.asteroids.last()
 
     spaceField.generateExplosion(asteroid)
+    spaceField.generateAsteroid()
+
+    asteroid = spaceField.asteroids.last()
+
+    spaceField.generateExplosion(asteroid)
+    val explosionNum = spaceField.explosions.size
     spaceField.trimExplosions()
 
+    assertEquals(2, explosionNum)
     assertEquals(0, spaceField.explosions.size)
   }
 
