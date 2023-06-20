@@ -42,7 +42,7 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     private set
 
   val spaceObjects: List<SpaceObject>
-    get() = listOf(this.ship) + this.missiles + this.asteroids
+    get() = listOf(this.ship) + this.missiles + this.asteroids + this.explosions
 
   fun moveShip() {
     this.ship.move(boundaryX, boundaryY)
@@ -84,6 +84,31 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     }
   }
 
+  fun removeAfterExplosion(i: Int, j: Int) {
+    this.asteroids = this.asteroids.filterIndexed { index, x -> index != i }
+    this.missiles = this.missiles.filterIndexed { index, x -> index != j }
+  }
+
+
+  fun createTestMissile() {
+    this.missiles += Missile(
+      initialPosition = Point2D(x = 10.0, y = 10.0),
+      initialVelocity = Vector2D(dx = 0.0, dy = 0.0),
+      radius = 1.0,
+      mass = 1.0,
+    )
+  }
+
+  fun createTestAsteroid() {
+    this.asteroids += Asteroid(
+      initialPosition = Point2D(x = 10.0, y = 10.0),
+      initialVelocity = Vector2D(dx = 0.0, dy = 0.0),
+      radius = 1.0,
+      mass = 1.0,
+    )
+  }
+
+
   private fun initializeShip(): SpaceShip {
     return SpaceShip(
       initialPosition = standardShipPosition(),
@@ -122,8 +147,6 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     return Explosion(
       initialPosition = asteroid.center,
       initialVelocity = asteroid.velocity,
-      //initialPosition = generateRandomAsteroidPosition(),
-      //initialVelocity = generateRandomAsteroidVelocity(),
       radius = asteroid.radius,
       mass = 0.0,
     )
