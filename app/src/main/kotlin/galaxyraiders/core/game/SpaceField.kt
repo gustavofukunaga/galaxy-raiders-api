@@ -75,7 +75,7 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
   }
 
   fun trimExplosions() {
-    this.explosions.clear()
+    this.explosions = this.explosions.filter {it == null}
   }
 
   fun trimAsteroids() {
@@ -120,10 +120,10 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
 
   private fun createExplosion(asteroid: Asteroid): Explosion {
     return Explosion(
-     // initialPosition = asteroid.initialPosition,
-     // initialVelocity = asteroid.initialVelocity,
-      initialPosition = generateRandomAsteroidPosition(),
-      initialVelocity = generateRandomAsteroidVelocity(),
+      initialPosition = asteroid.center,
+      initialVelocity = asteroid.velocity,
+      //initialPosition = generateRandomAsteroidPosition(),
+      //initialVelocity = generateRandomAsteroidVelocity(),
       radius = asteroid.radius,
       mass = 0.0,
     )
