@@ -109,6 +109,21 @@ class GameEngineTest {
   }
 
   @Test
+  fun `it can generate explosions from asteroids and missiles impact`() {
+    hardGame.field.createTestAsteroid()
+    hardGame.field.createTestMissile()
+    val nExplosion = hardGame.field.explosions.size
+    val nMissile = hardGame.field.missiles.size
+    val nAsteroids = hardGame.field.asteroids.size
+
+    hardGame.generateExplosions()
+
+    assertEquals(nExplosion + 1, hardGame.field.explosions.size)
+    assertEquals(nMissile - 1, hardGame.field.missiles.size)
+    assertEquals(nAsteroids - 1, hardGame.field.asteroids.size)
+  }
+
+  @Test
   fun `it handle collisions between objects`() {
     // Degenerate scenario: both asteroids will be above each other
     hardGame.generateAsteroids()
