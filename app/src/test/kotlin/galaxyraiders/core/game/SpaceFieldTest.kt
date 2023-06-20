@@ -81,7 +81,16 @@ class SpaceFieldTest {
   }
 
   @Test
-  fun `it has a list of objects with ship, missiles and asteroids`() {
+  fun `it starts with no explosions`() {
+    assertAll(
+      "SpaceField should initialize an empty list of explosions",
+      { assertNotNull(spaceField.explosions) },
+      { assertEquals(0, spaceField.explosions.size) },
+    )
+  }
+
+  @Test
+  fun `it has a list of objects with ship, missiles, asteroids and explosions`() {
     val ship = spaceField.ship
 
     spaceField.generateMissile()
@@ -89,6 +98,9 @@ class SpaceFieldTest {
 
     spaceField.generateAsteroid()
     val asteroid = spaceField.asteroids.last()
+
+    spaceField.generateExplosion(asteroid)
+    val explosions = spaceField.explosions.last()
 
     val expectedSpaceObjects = listOf<SpaceObject>(
       ship, missile, asteroid
@@ -215,6 +227,18 @@ class SpaceFieldTest {
     spaceField.moveAsteroids()
 
     assertEquals(expectedAsteroidPosition, asteroid.center)
+  }
+
+  @Test
+  fun `it can generate a new explosion`() {
+    spaceField.generateAsteroid()
+
+    val asteroid = spaceField.asteroids.last()
+
+    val numExplosions = spaceField.explosions.size
+    spaceField.generateExplosion(asteroid)
+
+    assertEquals(numExplosions + 1, spaceField.explosions.size)
   }
 
   @Test
