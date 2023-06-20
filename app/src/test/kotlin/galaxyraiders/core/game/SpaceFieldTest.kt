@@ -401,6 +401,18 @@ class SpaceFieldTest {
     assertNotEquals(-1, spaceField.asteroids.indexOf(asteroid))
   }
 
+  @Test
+  fun `it does clear all explosions`() {
+    spaceField.generateAsteroid()
+
+    val asteroid = spaceField.asteroids.last()
+
+    spaceField.generateExplosion(asteroid)
+    spaceField.trimExplosions()
+
+    assertEquals(0, spaceField.explosions.size)
+  }
+
   private companion object {
     @JvmStatic
     fun provideSpaceFieldWithCornerCaseGeneratorArguments(): Stream<Arguments> {
