@@ -78,10 +78,21 @@ class GameEngine(
 
   fun updateSpaceObjects() {
     if (!this.playing) return
+    this.generateExplosions()
     this.handleCollisions()
     this.moveSpaceObjects()
     this.trimSpaceObjects()
     this.generateAsteroids()
+  }
+
+  fun generateExplosions() {
+    for (i in 0 until this.field.missiles.size) {
+      for (j in 0 until this.field.asteroids.size) {
+        if (this.field.missiles[i].impacts(this.field.asteroids[j])) {
+          this.field.generateExplosion()
+        }
+      }
+    }
   }
 
   fun handleCollisions() {
