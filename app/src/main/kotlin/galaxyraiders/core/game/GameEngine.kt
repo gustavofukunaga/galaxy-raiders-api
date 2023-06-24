@@ -7,6 +7,9 @@ import galaxyraiders.ports.ui.Controller.PlayerCommand
 import galaxyraiders.ports.ui.Visualizer
 import kotlin.system.measureTimeMillis
 
+import galaxyraiders.core.score.GameExecution
+import java.time.LocalDateTime
+
 const val MILLISECONDS_PER_SECOND: Int = 1000
 
 object GameEngineConfig {
@@ -26,6 +29,7 @@ class GameEngine(
   val generator: RandomGenerator,
   val controller: Controller,
   val visualizer: Visualizer,
+  val startTime: String = LocalDateTime.now().toString(),
 ) {
   val field = SpaceField(
     width = GameEngineConfig.spaceFieldWidth,
@@ -35,10 +39,20 @@ class GameEngine(
 
   var playing = true
 
+  var gameState = Pair(0, 0.0)
+  var nExplosions = 0
+  var score = 0.0
+
+  fun updateGameScoreInfo() {
+    this.nExplosions += this.gameState.first
+    this.score += this.gameState.second
+  }
+
   fun execute() {
     while (true) {
       val duration = measureTimeMillis { this.tick() }
 
+    GameExecution(this.startTime, this.score, this.nExplosions)
       Thread.sleep(
         maxOf(0, GameEngineConfig.msPerFrame - duration)
       )
@@ -48,6 +62,7 @@ class GameEngine(
   fun execute(maxIterations: Int) {
     repeat(maxIterations) {
       this.tick()
+    GameExecution(this.startTime, this.score, this.nExplosions)
     }
   }
 
@@ -87,7 +102,7 @@ class GameEngine(
 
   fun generateExplosions() {
     if (this.field.missiles.isNotEmpty() && this.field.missiles.isNotEmpty())
-      this.field.detectImpactToExplosion()
+      this.gameState = this.field.detectImpactToExplosion()
   }
 
   fun handleCollisions() {
