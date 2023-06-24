@@ -84,9 +84,11 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     }
   }
 
-  fun removeAfterExplosion(i: Int, j: Int) {
-    this.asteroids = this.asteroids.filterIndexed { index, x -> index != i }
-    this.missiles = this.missiles.filterIndexed { index, x -> index != j }
+  fun removeAfterExplosion(asteroidsRemove: List<Int>, missilesRemove: List<Int>) {
+    for (i in asteroidsRemove.indices)
+      this.asteroids = this.asteroids.filterIndexed { index, x -> index != asteroidsRemove[i] }
+    for (i in missilesRemove.indices)
+      this.missiles = this.missiles.filterIndexed { index, x -> index != missilesRemove[i] }
   }
 
 
@@ -109,14 +111,18 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
   }
 
   fun detectImpactToExplosion() {
+    val missilesRemove = mutableListOf<Int>()
+    val asteroidsRemove = mutableListOf<Int>()
     for (i in 0 until this.missiles.size) {
       for (j in 0 until this.asteroids.size) {
         if (this.missiles[i].impacts(this.asteroids[j])) {
           this.generateExplosion(this.asteroids[j])
-          this.removeAfterExplosion(j, i)
+          missilesRemove += i
+          asteroidsRemove += j
         }
       }
     }
+    this.removeAfterExplosion(asteroidsRemove, missilesRemove)
   }
   private fun initializeShip(): SpaceShip {
     return SpaceShip(
