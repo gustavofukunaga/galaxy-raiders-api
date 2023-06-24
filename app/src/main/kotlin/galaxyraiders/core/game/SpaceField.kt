@@ -38,8 +38,11 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
   var asteroids: List<Asteroid> = emptyList()
     private set
 
+  var explosions: List<Explosion> = emptyList()
+    private set
+
   val spaceObjects: List<SpaceObject>
-    get() = listOf(this.ship) + this.missiles + this.asteroids
+    get() = listOf(this.ship) + this.missiles + this.asteroids + this.explosions
 
   fun moveShip() {
     this.ship.move(boundaryX, boundaryY)
@@ -57,6 +60,10 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     this.missiles += this.createMissile()
   }
 
+  fun generateExplosion(asteroid: Asteroid) {
+    this.explosions += this.createExplosion(asteroid)
+  }
+
   fun generateAsteroid() {
     this.asteroids += this.createAsteroidWithRandomProperties()
   }
@@ -67,12 +74,56 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     }
   }
 
+  fun trimExplosions() {
+    this.explosions = this.explosions.filter {it == null}
+  }
+
   fun trimAsteroids() {
     this.asteroids = this.asteroids.filter {
       it.inBoundaries(this.boundaryX, this.boundaryY)
     }
   }
 
+  fun removeAfterExplosion(asteroidsRemove: List<Int>, missilesRemove: List<Int>) {
+    for (i in asteroidsRemove.indices)
+      this.asteroids = this.asteroids.filterIndexed { index, x -> index != asteroidsRemove[i] }
+    for (i in missilesRemove.indices)
+      this.missiles = this.missiles.filterIndexed { index, x -> index != missilesRemove[i] }
+  }
+
+
+  fun createTestMissile() {
+    this.missiles += Missile(
+      initialPosition = Point2D(x = 11.0, y = 10.0),
+      initialVelocity = Vector2D(dx = 0.0, dy = 0.0),
+      radius = 1.0,
+      mass = 1.0,
+    )
+  }
+
+  fun createTestAsteroid() {
+    this.asteroids += Asteroid(
+      initialPosition = Point2D(x = 10.0, y = 10.0),
+      initialVelocity = Vector2D(dx = 0.0, dy = 0.0),
+      radius = 1.0,
+      mass = 1.0,
+    )
+  }
+
+  fun detectImpactToExplosion() {
+    val missilesRemove = mutableListOf<Int>()
+    val asteroidsRemove = mutableListOf<Int>()
+    for (i in 0 until this.missiles.size) {
+      for (j in 0 until this.asteroids.size) {
+        if (this.missiles[i].impacts(this.asteroids[j])) {
+          this.generateExplosion(this.asteroids[j])
+          missilesRemove += i
+          asteroidsRemove += j
+        }
+      }
+    }
+    this.removeAfterExplosion(asteroidsRemove, missilesRemove)
+  }
   private fun initializeShip(): SpaceShip {
     return SpaceShip(
       initialPosition = standardShipPosition(),
@@ -105,6 +156,15 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
 
   private fun defineMissileVelocity(): Vector2D {
     return Vector2D(dx = 0.0, dy = 1.0)
+  }
+
+  private fun createExplosion(asteroid: Asteroid): Explosion {
+    return Explosion(
+      initialPosition = asteroid.center,
+      initialVelocity = asteroid.velocity,
+      radius = asteroid.radius,
+      mass = 0.0,
+    )
   }
 
   private fun createAsteroidWithRandomProperties(): Asteroid {

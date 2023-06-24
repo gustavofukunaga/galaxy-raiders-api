@@ -81,7 +81,16 @@ class SpaceFieldTest {
   }
 
   @Test
-  fun `it has a list of objects with ship, missiles and asteroids`() {
+  fun `it starts with no explosions`() {
+    assertAll(
+      "SpaceField should initialize an empty list of explosions",
+      { assertNotNull(spaceField.explosions) },
+      { assertEquals(0, spaceField.explosions.size) },
+    )
+  }
+
+  @Test
+  fun `it has a list of objects with ship, missiles, asteroids and explosions`() {
     val ship = spaceField.ship
 
     spaceField.generateMissile()
@@ -90,8 +99,11 @@ class SpaceFieldTest {
     spaceField.generateAsteroid()
     val asteroid = spaceField.asteroids.last()
 
+    spaceField.generateExplosion(asteroid)
+    val explosions = spaceField.explosions.last()
+
     val expectedSpaceObjects = listOf<SpaceObject>(
-      ship, missile, asteroid
+      ship, missile, asteroid, explosions
     )
 
     assertEquals(expectedSpaceObjects, spaceField.spaceObjects)
@@ -215,6 +227,18 @@ class SpaceFieldTest {
     spaceField.moveAsteroids()
 
     assertEquals(expectedAsteroidPosition, asteroid.center)
+  }
+
+  @Test
+  fun `it can generate a new explosion`() {
+    spaceField.generateAsteroid()
+
+    val asteroid = spaceField.asteroids.last()
+
+    val numExplosions = spaceField.explosions.size
+    spaceField.generateExplosion(asteroid)
+
+    assertEquals(numExplosions + 1, spaceField.explosions.size)
   }
 
   @Test
@@ -375,6 +399,25 @@ class SpaceFieldTest {
     spaceField.trimAsteroids()
 
     assertNotEquals(-1, spaceField.asteroids.indexOf(asteroid))
+  }
+
+  @Test
+  fun `it does clear all explosions`() {
+    spaceField.generateAsteroid()
+
+    var asteroid = spaceField.asteroids.last()
+
+    spaceField.generateExplosion(asteroid)
+    spaceField.generateAsteroid()
+
+    asteroid = spaceField.asteroids.last()
+
+    spaceField.generateExplosion(asteroid)
+    val explosionNum = spaceField.explosions.size
+    spaceField.trimExplosions()
+
+    assertEquals(2, explosionNum)
+    assertEquals(0, spaceField.explosions.size)
   }
 
   private companion object {
