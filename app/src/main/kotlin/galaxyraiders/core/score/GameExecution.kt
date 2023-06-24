@@ -20,7 +20,7 @@ data class GameExecution(
     }
 
   // Salvar o JSON em um arquivo
-  val file = File("game_history.json")
+  val file = File("Scoreboard.json")
   file.writeText(json)
   }
 }
