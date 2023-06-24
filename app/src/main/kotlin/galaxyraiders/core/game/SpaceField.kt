@@ -92,7 +92,7 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
 
   fun createTestMissile() {
     this.missiles += Missile(
-      initialPosition = Point2D(x = 10.0, y = 10.0),
+      initialPosition = Point2D(x = 11.0, y = 10.0),
       initialVelocity = Vector2D(dx = 0.0, dy = 0.0),
       radius = 1.0,
       mass = 1.0,
@@ -108,7 +108,16 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     )
   }
 
-
+  fun detectImpactToExplosion() {
+    for (i in 0 until this.missiles.size) {
+      for (j in 0 until this.asteroids.size) {
+        if (this.missiles[i].impacts(this.asteroids[j])) {
+          this.generateExplosion(this.asteroids[j])
+          this.removeAfterExplosion(j, i)
+        }
+      }
+    }
+  }
   private fun initializeShip(): SpaceShip {
     return SpaceShip(
       initialPosition = standardShipPosition(),
