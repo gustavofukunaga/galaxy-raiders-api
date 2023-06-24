@@ -110,6 +110,8 @@ class GameEngineTest {
 
   @Test
   fun `it can generate explosions from asteroids and missiles impact`() {
+    hardGame.generateAsteroids()
+    hardGame.generateAsteroids()
     hardGame.field.createTestAsteroid()
     hardGame.field.createTestMissile()
     val nExplosion = hardGame.field.explosions.size
