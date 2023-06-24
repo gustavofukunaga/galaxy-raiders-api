@@ -86,14 +86,8 @@ class GameEngine(
   }
 
   fun generateExplosions() {
-    for (i in 0 until this.field.missiles.size - 1) {
-      for (j in 0 until this.field.asteroids.size - 1) {
-        if (this.field.missiles[i].impacts(this.field.asteroids[j])) {
-          this.field.generateExplosion(this.field.asteroids[j])
-          this.field.removeAfterExplosion(j, i)
-        }
-      }
-    }
+    if (this.field.missiles.isNotEmpty() && this.field.missiles.isNotEmpty())
+      this.field.detectImpactToExplosion()
   }
 
   fun handleCollisions() {
