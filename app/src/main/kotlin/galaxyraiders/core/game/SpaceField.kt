@@ -110,19 +110,30 @@ data class SpaceField(val width: Int, val height: Int, val generator: RandomGene
     )
   }
 
-  fun detectImpactToExplosion() {
+  fun processScore(asteroid: Asteroid): Double {
+    return asteroid.radius + asteroid.mass
+  }
+
+  fun detectImpactToExplosion(): Pair<Int, Double> {
     val missilesRemove = mutableListOf<Int>()
     val asteroidsRemove = mutableListOf<Int>()
+    var nExplosions = 0
+    var score = 0.0
+    
     for (i in 0 until this.missiles.size) {
       for (j in 0 until this.asteroids.size) {
         if (this.missiles[i].impacts(this.asteroids[j])) {
           this.generateExplosion(this.asteroids[j])
           missilesRemove += i
           asteroidsRemove += j
+          nExplosions++
+          score += processScore(this.asteroids[j])
         }
       }
     }
+
     this.removeAfterExplosion(asteroidsRemove, missilesRemove)
+    return Pair(nExplosions, score)
   }
   private fun initializeShip(): SpaceShip {
     return SpaceShip(
