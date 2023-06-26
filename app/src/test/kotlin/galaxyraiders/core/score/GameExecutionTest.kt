@@ -27,22 +27,32 @@ class GameExecutionTest {
 
   @Test
   fun `it adds to Scoreboard json`() {
-    val file = File("src/main/kotlin/galaxyraiders/core/score/Scoreboard.json")
     execution.addToScoreboard()
+    val file = File("src/main/kotlin/galaxyraiders/core/score/Scoreboard.json")
 
     assertNotEquals(file.length(), 0)
   }
 
   @Test
   fun `it adds the updated Scoreboard json`() {
-    val file = File("src/main/kotlin/galaxyraiders/core/score/Scoreboard.json")
     execution.updateScore(1.0, 1)
     execution.updateScore(2.0, 2)
     execution.updateScore(11.0, 101)
     execution.addToScoreboard()
 
+    val file = File("src/main/kotlin/galaxyraiders/core/score/Scoreboard.json")
     assertNotEquals(file.length(), 0)
     assertEquals(11.0, execution.score)
     assertEquals(101, execution.destroyedAsteroids)
+  }
+
+  @Test
+  fun `it adds to Leaderboard json`() {
+    execution.updateScore(2.0, 2)
+    execution.addToScoreboard()
+    execution.addToLeaderboard()
+    val file = File("src/main/kotlin/galaxyraiders/core/score/Leaderboard.json")
+
+    assertNotEquals(file.length(), 0)
   }
 }
