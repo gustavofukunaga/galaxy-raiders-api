@@ -420,6 +420,23 @@ class SpaceFieldTest {
     assertEquals(0, spaceField.explosions.size)
   }
 
+  @Test
+  fun `it can detect Impact to explode and return score info`() {
+    spaceField.createTestAsteroid() //radius = 1.0 mass = 1.0
+    spaceField.createTestMissile() //radius = 1.0 mass = 1.0
+
+    val numMissiles = spaceField.missiles.size
+    val numAsteroids = spaceField.asteroids.size
+
+    val scoreInfo = spaceField.detectImpactToExplosion()
+
+    assertEquals(numMissiles - 1, spaceField.missiles.size)
+    assertEquals(numAsteroids - 1, spaceField.asteroids.size)
+    assertEquals(1, scoreInfo.first)
+    assertEquals(2.0, scoreInfo.second)
+  }
+
+
   private companion object {
     @JvmStatic
     fun provideSpaceFieldWithCornerCaseGeneratorArguments(): Stream<Arguments> {
