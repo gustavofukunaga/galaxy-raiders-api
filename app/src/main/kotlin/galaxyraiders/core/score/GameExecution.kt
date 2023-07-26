@@ -68,25 +68,38 @@ data class GameExecution(
   fun addToLeaderboard() {
     val scoreFile = File("src/main/kotlin/galaxyraiders/core/score/Scoreboard.json")
     val scores = scoreFile.readText()
-    
-    val gameDataList = parseJson(scores)
+    val size = scoreFile.length()
+      val gameDataList = parseJson(scores)
 
-    val sortedList = gameDataList.sortedByDescending { it.score }
-    val sortedTop3 = sortedList.subList(0, 3)
+      val sortedList = gameDataList.sortedByDescending { it.score }
 
-    var content = "["
-    for (gameData in sortedTop3) {
-        content += "{\"startTime\": \"${gameData.startTime}\",  \"Score\": ${gameData.score}"
-        content += ", \"destroyedAsteroids\": ${gameData.destroyedAsteroids}}, "
+      var  sortedTop3 = sortedList
+      if (contarChaveFechamento(scoreFile) > 3) 
+        sortedTop3 = sortedList.subList(0, 3)
+      else
+        sortedTop3 = sortedList
+
+        var content = "["
+        for (gameData in sortedTop3) {
+          content += "{\"startTime\": \"${gameData.startTime}\",  \"Score\": ${gameData.score}"
+            content += ", \"destroyedAsteroids\": ${gameData.destroyedAsteroids}}, "
+        }
+
+      val newContent = content.substring(0, content.lastIndexOf(",")) + "]"
+
+        val leaderboardFile = File("src/main/kotlin/galaxyraiders/core/score/Leaderboard.json")
+        leaderboardFile.createNewFile()
+        leaderboardFile.writeText(newContent)
+  }
+fun contarChaveFechamento(file: File): Int {
+    var contador = 0
+
+    file.forEachLine { linha ->
+        contador += linha.count { it == '}' }
     }
 
-    val newContent = content.substring(0, content.lastIndexOf(",")) + "]"
-
-    val leaderboardFile = File("src/main/kotlin/galaxyraiders/core/score/Leaderboard.json")
-    leaderboardFile.createNewFile()
-    leaderboardFile.writeText(newContent)
-  }
-
+    return contador
+}
   data class GameData(val startTime: String, var score: Double, var destroyedAsteroids: Int)
   
   fun parseJson(json: String): List<GameData> {
