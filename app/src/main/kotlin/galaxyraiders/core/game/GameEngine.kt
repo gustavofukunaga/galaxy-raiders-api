@@ -66,6 +66,7 @@ class GameEngine(
     this.updateSpaceObjects()
     this.execution.updateScore(score, nExplosions)
     this.execution.addToScoreboard()
+    this.execution.addToLeaderboard()
     this.renderSpaceField()
   }
 
